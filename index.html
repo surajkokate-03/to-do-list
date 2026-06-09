@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A modern, minimal to-do list web application to create and manage your tasks efficiently." />
+  <meta name="keywords" content="todo, task manager, productivity, to-do list" />
+  <meta name="author" content="TaskFlow" />
+  <meta property="og:title" content="TaskFlow — Web Application To-Do Lists" />
+  <meta property="og:description" content="Build and manage your to-do lists with a clean, fast, and beautiful interface." />
+  <meta property="og:type" content="website" />
+  <title>TaskFlow — Web Application To-Do Lists</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Header -->
+  <header class="app-header" role="banner">
+    <div class="header-inner">
+      <div class="logo" aria-label="TaskFlow logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect width="28" height="28" rx="8" fill="#7FBF6A"/>
+          <path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">TaskFlow</span>
+      </div>
+      <div class="header-actions">
+        <!-- Dark mode toggle -->
+        <button class="icon-btn" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
+          </svg>
+          <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <!-- Minimize-like decorative tab buttons -->
+        <div class="tab-dots" aria-hidden="true">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main" role="main">
+
+    <!-- Hero Card -->
+    <section class="hero-card" aria-labelledby="app-title">
+      <div class="hero-text">
+        <h1 id="app-title" class="hero-title">Web Application<br /><span class="accent">To-Do Lists</span></h1>
+        <p class="hero-subtitle">Build a user&#8209;friendly web application that allows users to create and manage to&#8209;do lists.</p>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row" aria-label="Task statistics">
+        <div class="stat-pill" id="stat-total">
+          <span class="stat-num" id="count-total">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-pill active-stat" id="stat-active">
+          <span class="stat-num" id="count-active">0</span>
+          <span class="stat-label">Active</span>
+        </div>
+        <div class="stat-pill done-stat" id="stat-done">
+          <span class="stat-num" id="count-done">0</span>
+          <span class="stat-label">Done</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls Card -->
+    <section class="controls-card" aria-label="Task controls">
+
+      <!-- Add Task -->
+      <div class="add-task-row">
+        <div class="input-wrapper">
+          <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <input
+            type="text"
+            id="task-input"
+            class="task-input"
+            placeholder="Add a new task…"
+            aria-label="New task input"
+            maxlength="200"
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn btn-primary" id="add-task-btn" aria-label="Add task">
+          Add Task
+        </button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-row">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            placeholder="Search tasks…"
+            aria-label="Search tasks"
+            autocomplete="off"
+          />
+          <button class="clear-search-btn" id="clear-search" aria-label="Clear search" style="display:none">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-row" role="tablist" aria-label="Filter tasks">
+        <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="filter-btn" data-filter="active" role="tab" aria-selected="false">Active</button>
+        <button class="filter-btn" data-filter="completed" role="tab" aria-selected="false">Completed</button>
+        <button class="btn btn-ghost btn-sm" id="clear-completed-btn" aria-label="Clear completed tasks">Clear Done</button>
+      </div>
+
+    </section>
+
+    <!-- Task List -->
+    <section class="task-list-card" aria-label="Task list">
+      <ul id="task-list" class="task-list" role="list" aria-label="Tasks">
+        <!-- Tasks injected by JS -->
+      </ul>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" aria-live="polite" style="display:none">
+        <!-- Pure CSS/SVG Illustration -->
+        <div class="empty-illustration" aria-hidden="true">
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Clipboard body -->
+            <rect x="20" y="22" width="80" height="82" rx="10" fill="var(--surface-2)" stroke="var(--border)" stroke-width="2"/>
+            <!-- Clip -->
+            <rect x="42" y="14" width="36" height="18" rx="9" fill="var(--surface-2)" stroke="var(--border)" stroke-width="2"/>
+            <rect x="50" y="18" width="20" height="10" rx="5" fill="var(--accent)" opacity="0.3"/>
+            <!-- Lines -->
+            <rect x="34" y="50" width="52" height="4" rx="2" fill="var(--border)"/>
+            <rect x="34" y="62" width="40" height="4" rx="2" fill="var(--border)"/>
+            <rect x="34" y="74" width="46" height="4" rx="2" fill="var(--border)"/>
+            <!-- Checkmark circle -->
+            <circle cx="84" cy="88" r="18" fill="var(--accent)" opacity="0.15"/>
+            <circle cx="84" cy="88" r="14" fill="var(--accent)" opacity="0.2"/>
+            <path d="M77 88l4.5 4.5 7-7" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="empty-title" id="empty-title">No tasks yet</p>
+        <p class="empty-desc" id="empty-desc">Add your first task above to get started.</p>
+      </div>
+    </section>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none">
+      <div class="modal-card">
+        <h2 id="modal-title" class="modal-title">Edit Task</h2>
+        <input type="text" id="edit-input" class="task-input modal-input" aria-label="Edit task text" maxlength="200" />
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancel-edit">Cancel</button>
+          <button class="btn btn-primary" id="save-edit">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <p>Built with <span aria-label="love">♥</span> using Vanilla JS &middot; <span id="year"></span> TaskFlow</p>
+    <p class="footer-sub">Tasks are saved locally in your browser.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
