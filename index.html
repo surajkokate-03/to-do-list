@@ -1,192 +1,1925 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A modern, minimal to-do list web application to create and manage your tasks efficiently." />
-  <meta name="keywords" content="todo, task manager, productivity, to-do list" />
-  <meta name="author" content="TaskFlow" />
-  <meta property="og:title" content="TaskFlow — Web Application To-Do Lists" />
-  <meta property="og:description" content="Build and manage your to-do lists with a clean, fast, and beautiful interface." />
-  <meta property="og:type" content="website" />
-  <title>TaskFlow — Web Application To-Do Lists</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>Reminders</title>
+<style>
+/* =========================================================
+   iOS DESIGN SYSTEM
+   ========================================================= */
+:root {
+  /* iOS Light Palette */
+  --bg:            #F2F2F7;
+  --bg2:           #FFFFFF;
+  --bg3:           #F2F2F7;
+  --grouped-bg:    #F2F2F7;
+  --card:          #FFFFFF;
+  --card2:         rgba(255,255,255,0.72);
+  --separator:     rgba(60,60,67,0.12);
+  --separator2:    rgba(60,60,67,0.06);
+
+  --label:         #000000;
+  --label2:        rgba(60,60,67,0.6);
+  --label3:        rgba(60,60,67,0.3);
+  --label4:        rgba(60,60,67,0.18);
+
+  --blue:          #007AFF;
+  --green:         #34C759;
+  --red:           #FF3B30;
+  --orange:        #FF9500;
+  --yellow:        #FFCC00;
+  --purple:        #AF52DE;
+  --pink:          #FF2D55;
+  --teal:          #5AC8FA;
+  --indigo:        #5856D6;
+
+  --nav-bg:        rgba(242,242,247,0.85);
+  --tab-bg:        rgba(255,255,255,0.88);
+  --modal-bg:      rgba(255,255,255,0.98);
+
+  --shadow-card:   0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-float:  0 8px 40px rgba(0,0,0,0.14);
+  --shadow-tab:    0 -0.5px 0 rgba(0,0,0,0.12);
+
+  --r-card:        13px;
+  --r-btn:         10px;
+  --r-pill:        99px;
+  --r-sheet:       20px;
+
+  --font: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-rounded: -apple-system, 'SF Pro Rounded', BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+
+  --tr: 0.22s cubic-bezier(0.4,0,0.2,1);
+  --spring: 0.38s cubic-bezier(0.34,1.56,0.64,1);
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tab-h: 83px;
+}
+
+/* iOS Dark Mode */
+[data-theme="dark"] {
+  --bg:            #000000;
+  --bg2:           #1C1C1E;
+  --bg3:           #2C2C2E;
+  --grouped-bg:    #000000;
+  --card:          #1C1C1E;
+  --card2:         rgba(28,28,30,0.8);
+  --separator:     rgba(84,84,88,0.6);
+  --separator2:    rgba(84,84,88,0.36);
+
+  --label:         #FFFFFF;
+  --label2:        rgba(235,235,245,0.6);
+  --label3:        rgba(235,235,245,0.3);
+  --label4:        rgba(235,235,245,0.18);
+
+  --blue:          #0A84FF;
+  --green:         #30D158;
+  --red:           #FF453A;
+  --orange:        #FF9F0A;
+  --yellow:        #FFD60A;
+  --purple:        #BF5AF2;
+  --pink:          #FF375F;
+  --teal:          #5AC8FA;
+  --indigo:        #5E5CE6;
+
+  --nav-bg:        rgba(0,0,0,0.85);
+  --tab-bg:        rgba(28,28,30,0.92);
+  --modal-bg:      #1C1C1E;
+
+  --shadow-card:   0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-float:  0 8px 40px rgba(0,0,0,0.6);
+  --shadow-tab:    0 -0.5px 0 rgba(255,255,255,0.08);
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--grouped-bg);
+  color: var(--label);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  transition: background var(--tr), color var(--tr);
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: var(--font); cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: var(--font); }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: calc(var(--tab-h) + 8px);
+  display: none;
+}
+.screen.active { display: block; }
+
+/* =========================================================
+   NAV BAR — iOS Large Title style
+   ========================================================= */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--separator);
+  transition: background var(--tr);
+}
+.nav-bar-inner {
+  padding: 10px 16px 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.nav-large-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--label);
+  line-height: 1.1;
+  flex: 1;
+}
+.nav-large-title .accent { color: var(--blue); }
+.nav-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Theme pill toggle — the signature element */
+.theme-pill {
+  display: flex;
+  align-items: center;
+  background: var(--bg3);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  gap: 0;
+  border: 0.5px solid var(--separator);
+}
+.theme-opt {
+  width: 30px; height: 24px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--tr);
+  font-size: .8rem;
+}
+.theme-opt.active {
+  background: var(--card);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.nav-icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--label4);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue);
+  font-size: 1.1rem;
+  transition: all var(--tr);
+  flex-shrink: 0;
+}
+.nav-icon-btn:active { opacity: 0.6; transform: scale(0.92); }
+
+/* =========================================================
+   TAB BAR — iOS style
+   ========================================================= */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: var(--tab-h);
+  background: var(--tab-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: var(--shadow-tab);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  padding-bottom: var(--safe-bottom);
+  z-index: 50;
+  transition: background var(--tr);
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 2px 0;
+  cursor: pointer;
+  transition: opacity var(--tr);
+}
+.tab-item:active { opacity: 0.6; }
+.tab-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--tr);
+  position: relative;
+}
+.tab-icon svg { transition: all var(--tr); }
+.tab-label {
+  font-size: .62rem;
+  font-weight: 500;
+  color: var(--label3);
+  transition: color var(--tr);
+  letter-spacing: 0.01em;
+}
+.tab-item.active .tab-label { color: var(--blue); }
+.tab-item.active .tab-icon svg { color: var(--blue); }
+.tab-item:not(.active) .tab-icon svg { color: var(--label3); }
+/* Badge */
+.tab-badge {
+  position: absolute;
+  top: -4px; right: -6px;
+  background: var(--red);
+  color: #fff;
+  font-size: .55rem;
+  font-weight: 700;
+  min-width: 16px; height: 16px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  border: 1.5px solid var(--grouped-bg);
+}
+
+/* =========================================================
+   SUMMARY CARDS (like iOS Reminders top section)
+   ========================================================= */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 16px 4px;
+}
+.summary-card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: 14px 14px 12px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all var(--tr);
+  position: relative;
+  overflow: hidden;
+}
+.summary-card:active { transform: scale(0.97); }
+.summary-card-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.summary-card-count {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.summary-card-label {
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--label2);
+}
+
+/* =========================================================
+   SECTION HEADER (like iOS grouped table section headers)
+   ========================================================= */
+.section-header {
+  padding: 22px 20px 6px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--label2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* =========================================================
+   TASK LIST — iOS grouped inset style
+   ========================================================= */
+.task-group {
+  background: var(--card);
+  border-radius: var(--r-card);
+  margin: 0 16px 10px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--separator2);
+  transition: background var(--tr);
+  position: relative;
+  animation: rowIn .22s ease both;
+}
+.task-row:last-child { border-bottom: none; }
+.task-row:active { background: var(--label4); }
+
+/* iOS radio-style checkbox */
+.ios-cb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--separator);
+  background: var(--card);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all var(--tr);
+  position: relative;
+}
+.ios-cb.checked {
+  border-color: transparent;
+  background: var(--green);
+}
+.ios-cb.checked::after {
+  content: '';
+  width: 5px; height: 9px;
+  border: 2px solid #fff;
+  border-top: none; border-left: none;
+  position: absolute;
+  transform: rotate(45deg) translate(-1px,-1px);
+}
+.ios-cb.pri-high   { border-color: var(--red); }
+.ios-cb.pri-med    { border-color: var(--orange); }
+.ios-cb.pri-low    { border-color: var(--blue); }
+.ios-cb.pri-high:not(.checked):hover { background: rgba(255,59,48,.08); }
+
+.task-content { flex: 1; min-width: 0; }
+.task-title-row {
+  font-size: .95rem;
+  font-weight: 400;
+  color: var(--label);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.task-row.done .task-title-row {
+  text-decoration: line-through;
+  color: var(--label3);
+}
+.task-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+.meta-chip {
+  font-size: .68rem;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.chip-overdue { background: rgba(255,59,48,.12); color: var(--red); }
+.chip-today   { background: rgba(255,149,0,.12);  color: var(--orange); }
+.chip-upcoming{ background: rgba(0,122,255,.1);   color: var(--blue); }
+.chip-cat     { background: var(--label4); color: var(--label2); }
+.chip-done    { background: rgba(52,199,89,.1);   color: var(--green); }
+
+/* Swipe action hint — iOS chevron */
+.task-chevron {
+  color: var(--label3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 32px;
+  text-align: center;
+}
+.empty-icon-wrap {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: var(--label4);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px;
+  font-size: 2rem;
+}
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--label);
+  margin-bottom: 6px;
+}
+.empty-sub {
+  font-size: .85rem;
+  color: var(--label2);
+  line-height: 1.55;
+}
+
+/* =========================================================
+   CALENDAR SCREEN
+   ========================================================= */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 4px;
+}
+.cal-month-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--label);
+}
+.cal-nav-btns { display: flex; gap: 8px; }
+.cal-nav-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--label4);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue);
+  transition: all var(--tr);
+}
+.cal-nav-btn:active { opacity: 0.6; transform: scale(0.9); }
+
+/* Day-of-week header */
+.cal-dow {
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  padding: 6px 12px 0;
+  gap: 2px;
+}
+.cal-dow-cell {
+  text-align: center;
+  font-size: .7rem;
+  font-weight: 600;
+  color: var(--label3);
+  padding: 4px 0;
+}
+
+/* Calendar grid */
+.cal-grid-wrap {
+  background: var(--card);
+  border-radius: var(--r-card);
+  margin: 6px 16px 0;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: 1px;
+  background: var(--separator2);
+  padding: 1px;
+}
+.cal-cell {
+  background: var(--card);
+  min-height: 56px;
+  padding: 4px 3px 3px;
+  cursor: pointer;
+  transition: background var(--tr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.cal-cell:active { background: var(--label4); }
+.cal-cell.other-month .cal-num { color: var(--label3); opacity: .4; }
+.cal-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem;
+  font-weight: 400;
+  color: var(--label);
+  transition: all var(--tr);
+}
+.cal-cell.today .cal-num {
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+}
+.cal-cell.selected .cal-num {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+}
+.cal-cell.today.selected .cal-num {
+  background: var(--blue);
+}
+/* Task dots */
+.cal-dots {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 28px;
+}
+.cal-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+}
+
+/* Selected day tasks */
+.cal-day-tasks {
+  margin: 12px 16px 0;
+}
+.cal-day-header {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--label);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+/* =========================================================
+   STATS SCREEN
+   ========================================================= */
+.stats-section {
+  padding: 0 16px 12px;
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.stat-block {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+}
+.stat-block-num {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-block-label {
+  font-size: .75rem;
+  color: var(--label2);
+  font-weight: 500;
+}
+
+.stat-bar-card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 10px;
+}
+.stat-bar-title {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--label);
+  margin-bottom: 14px;
+}
+.stat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.stat-bar-row:last-child { margin-bottom: 0; }
+.stat-bar-lbl {
+  font-size: .76rem;
+  font-weight: 600;
+  width: 36px;
+  flex-shrink: 0;
+}
+.stat-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--label4);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .7s cubic-bezier(0.4,0,0.2,1);
+}
+.stat-bar-n {
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--label2);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Completion ring (pure CSS) */
+.ring-wrap {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+.ring-svg { flex-shrink: 0; }
+.ring-bg { stroke: var(--label4); }
+.ring-fill {
+  stroke: var(--blue);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset .8s cubic-bezier(0.4,0,0.2,1);
+}
+.ring-text-wrap { flex: 1; }
+.ring-pct {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--blue);
+  line-height: 1;
+}
+.ring-label {
+  font-size: .78rem;
+  color: var(--label2);
+  margin-top: 4px;
+}
+
+/* =========================================================
+   BOTTOM SHEET (Add / Edit Task)
+   ========================================================= */
+.sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 80;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-overlay.open {
+  display: flex;
+  animation: overlayIn .2s ease;
+}
+.sheet {
+  background: var(--modal-bg);
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  width: 100%;
+  max-width: 430px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding-bottom: calc(24px + var(--safe-bottom));
+  animation: sheetUp var(--spring);
+  transition: background var(--tr);
+}
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--label3);
+  border-radius: 99px;
+  margin: 10px auto 16px;
+}
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 14px;
+  border-bottom: 0.5px solid var(--separator);
+}
+.sheet-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--label);
+}
+.sheet-btn {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--blue);
+  padding: 4px 0;
+  transition: opacity var(--tr);
+}
+.sheet-btn:active { opacity: 0.5; }
+.sheet-btn.danger { color: var(--red); }
+
+/* Form fields — iOS style */
+.form-section {
+  margin: 14px 16px 0;
+}
+.form-section-label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--label2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 0 4px;
+  margin-bottom: 6px;
+}
+.form-group {
+  background: var(--card2);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  border: 0.5px solid var(--separator);
+}
+.form-row-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 0.5px solid var(--separator2);
+  gap: 10px;
+}
+.form-row-item:last-child { border-bottom: none; }
+.form-row-label {
+  font-size: .88rem;
+  font-weight: 400;
+  color: var(--label2);
+  width: 80px;
+  flex-shrink: 0;
+}
+.form-row-input {
+  flex: 1;
+  font-size: .88rem;
+  font-weight: 400;
+  color: var(--label);
+  background: none;
+  border: none;
+  outline: none;
+  text-align: right;
+  min-width: 0;
+}
+.form-row-input::placeholder { color: var(--label3); }
+.form-row-input[type="date"]::-webkit-calendar-picker-indicator { filter: opacity(0.4); }
+.form-row-textarea {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: .88rem;
+  color: var(--label);
+  resize: none;
+  min-height: 60px;
+  padding: 12px 14px;
+  display: block;
+  line-height: 1.5;
+}
+.form-row-textarea::placeholder { color: var(--label3); }
+
+/* Segmented control */
+.seg-ctrl {
+  display: flex;
+  background: var(--label4);
+  border-radius: 9px;
+  padding: 2px;
+  gap: 1px;
+}
+.seg-opt {
+  flex: 1;
+  padding: 5px 4px;
+  border-radius: 7px;
+  font-size: .78rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--label2);
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.seg-opt.active {
+  background: var(--card);
+  color: var(--label);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+/* iOS-style toggle in form */
+.form-toggle {
+  width: 50px; height: 30px;
+  background: var(--label4);
+  border-radius: 99px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--tr);
+  flex-shrink: 0;
+}
+.form-toggle.on { background: var(--green); }
+.form-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 24px; height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform var(--tr);
+}
+.form-toggle.on::after { transform: translateX(20px); }
+
+/* =========================================================
+   DELETE CONFIRM SHEET
+   ========================================================= */
+.action-sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+}
+.action-sheet-overlay.open {
+  display: flex;
+  animation: overlayIn .15s ease;
+}
+.action-sheet {
+  background: var(--modal-bg);
+  border-radius: var(--r-sheet);
+  width: 100%;
+  max-width: 430px;
+  overflow: hidden;
+  animation: sheetUp var(--spring);
+  margin-bottom: calc(var(--safe-bottom) + 8px);
+}
+.action-sheet-title {
+  text-align: center;
+  padding: 14px 16px 10px;
+  font-size: .78rem;
+  color: var(--label2);
+  border-bottom: 0.5px solid var(--separator);
+}
+.action-sheet-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--label);
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--tr);
+  border-bottom: 0.5px solid var(--separator);
+}
+.action-sheet-btn:active { background: var(--label4); }
+.action-sheet-btn:last-child { border-bottom: none; }
+.action-sheet-btn.destructive { color: var(--red); font-weight: 400; }
+.action-sheet-btn.bold { font-weight: 600; color: var(--blue); }
+.action-sheet-cancel {
+  background: var(--card);
+  border-radius: var(--r-sheet);
+  margin: 8px 0 0;
+  overflow: hidden;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast-wrap {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: calc(100% - 32px);
+  max-width: 380px;
+}
+.toast {
+  background: var(--card2);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid var(--separator);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: .84rem;
+  font-weight: 500;
+  color: var(--label);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: toastIn .3s var(--spring) both;
+  pointer-events: auto;
+  width: 100%;
+}
+.toast.out { animation: toastOut .22s ease both; }
+.toast-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* =========================================================
+   FAB (Floating Add Button)
+   ========================================================= */
+.fab {
+  position: fixed;
+  bottom: calc(var(--tab-h) + 14px);
+  right: calc(50% - 430px/2 + 20px);
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,122,255,.4);
+  z-index: 40;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.fab:active { transform: scale(0.92); box-shadow: 0 2px 10px rgba(0,122,255,.35); }
+@media (min-width: 430px) {
+  .fab { right: max(20px, calc(50% - 195px)); }
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes overlayIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes sheetUp    { from { transform:translateY(100%) } to { transform:translateY(0) } }
+@keyframes rowIn      { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:none } }
+@keyframes toastIn    { from { opacity:0; transform:translateY(-10px) scale(.96) } to { opacity:1; transform:none } }
+@keyframes toastOut   { to   { opacity:0; transform:translateY(-8px) scale(.96) } }
+@keyframes fadeIn     { from { opacity:0 } to { opacity:1 } }
+@keyframes scaleIn    { from { opacity:0; transform:scale(.95) } to { opacity:1; transform:none } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}
+
+/* =========================================================
+   SEARCH BAR (iOS style)
+   ========================================================= */
+.ios-search-wrap {
+  padding: 8px 16px;
+  position: sticky;
+  top: 0;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  z-index: 20;
+}
+.ios-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--label4);
+  border-radius: 10px;
+  padding: 7px 10px;
+}
+.ios-search svg { color: var(--label3); flex-shrink: 0; }
+.ios-search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: .88rem;
+  color: var(--label);
+  min-width: 0;
+}
+.ios-search input::placeholder { color: var(--label3); }
+</style>
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+<div class="app">
 
-  <!-- Header -->
-  <header class="app-header" role="banner">
-    <div class="header-inner">
-      <div class="logo" aria-label="TaskFlow logo">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect width="28" height="28" rx="8" fill="#7FBF6A"/>
-          <path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="logo-text">TaskFlow</span>
-      </div>
-      <div class="header-actions">
-        <!-- Dark mode toggle -->
-        <button class="icon-btn" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-          <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
-          </svg>
-          <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
-            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-        </button>
-        <!-- Minimize-like decorative tab buttons -->
-        <div class="tab-dots" aria-hidden="true">
-          <span class="dot dot-red"></span>
-          <span class="dot dot-yellow"></span>
-          <span class="dot dot-green"></span>
+  <!-- ==================== SCREEN: TODAY ==================== -->
+  <div class="screen active" id="screen-today">
+
+    <!-- Nav bar -->
+    <div class="nav-bar">
+      <div class="nav-bar-inner">
+        <div>
+          <div class="nav-large-title">Good <span class="accent" id="greetingTime">morning</span> ☀️</div>
+        </div>
+        <div class="nav-actions">
+          <!-- Theme pill -->
+          <div class="theme-pill" id="themePill" role="group" aria-label="Color theme">
+            <div class="theme-opt active" id="themeLight" data-theme="light" title="Light" aria-label="Light mode">☀️</div>
+            <div class="theme-opt" id="themeDark" data-theme="dark" title="Dark" aria-label="Dark mode">🌙</div>
+          </div>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- Main Content -->
-  <main class="app-main" role="main">
-
-    <!-- Hero Card -->
-    <section class="hero-card" aria-labelledby="app-title">
-      <div class="hero-text">
-        <h1 id="app-title" class="hero-title">Web Application<br /><span class="accent">To-Do Lists</span></h1>
-        <p class="hero-subtitle">Build a user&#8209;friendly web application that allows users to create and manage to&#8209;do lists.</p>
+    <!-- Summary cards -->
+    <div class="summary-grid">
+      <div class="summary-card" data-nav="today-tasks" onclick="tabSwitch('tasks');setViewFilter('today')">
+        <div class="summary-card-icon" style="background:rgba(0,122,255,.12)">
+          <svg width="17" height="17" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="summary-card-count" id="sc-today" style="color:var(--blue)">0</div>
+        <div class="summary-card-label">Today</div>
       </div>
+      <div class="summary-card" onclick="tabSwitch('tasks');setViewFilter('all')">
+        <div class="summary-card-icon" style="background:rgba(175,82,222,.12)">
+          <svg width="17" height="17" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div class="summary-card-count" id="sc-all" style="color:var(--purple)">0</div>
+        <div class="summary-card-label">All Tasks</div>
+      </div>
+      <div class="summary-card" onclick="tabSwitch('tasks');setViewFilter('overdue')">
+        <div class="summary-card-icon" style="background:rgba(255,59,48,.12)">
+          <svg width="17" height="17" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="summary-card-count" id="sc-overdue" style="color:var(--red)">0</div>
+        <div class="summary-card-label">Overdue</div>
+      </div>
+      <div class="summary-card" onclick="tabSwitch('tasks');setViewFilter('done')">
+        <div class="summary-card-icon" style="background:rgba(52,199,89,.12)">
+          <svg width="17" height="17" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div class="summary-card-count" id="sc-done" style="color:var(--green)">0</div>
+        <div class="summary-card-label">Completed</div>
+      </div>
+    </div>
 
-      <!-- Stats Row -->
-      <div class="stats-row" aria-label="Task statistics">
-        <div class="stat-pill" id="stat-total">
-          <span class="stat-num" id="count-total">0</span>
-          <span class="stat-label">Total</span>
+    <!-- My Lists (categories) -->
+    <div class="section-header">My Lists</div>
+    <div class="task-group" id="lists-group">
+      <!-- injected -->
+    </div>
+
+    <!-- Upcoming -->
+    <div class="section-header">Due Today</div>
+    <div id="today-task-list"></div>
+
+  </div><!-- /screen-today -->
+
+  <!-- ==================== SCREEN: TASKS ==================== -->
+  <div class="screen" id="screen-tasks">
+    <div class="nav-bar">
+      <div class="nav-bar-inner">
+        <div>
+          <div class="nav-large-title" id="tasks-screen-title">All Tasks</div>
         </div>
-        <div class="stat-pill active-stat" id="stat-active">
-          <span class="stat-num" id="count-active">0</span>
-          <span class="stat-label">Active</span>
-        </div>
-        <div class="stat-pill done-stat" id="stat-done">
-          <span class="stat-num" id="count-done">0</span>
-          <span class="stat-label">Done</span>
+        <div class="nav-actions">
+          <div class="theme-pill" id="themePill2" role="group" aria-label="Color theme">
+            <div class="theme-opt" data-theme="light">☀️</div>
+            <div class="theme-opt" data-theme="dark">🌙</div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Controls Card -->
-    <section class="controls-card" aria-label="Task controls">
-
-      <!-- Add Task -->
-      <div class="add-task-row">
-        <div class="input-wrapper">
-          <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          <input
-            type="text"
-            id="task-input"
-            class="task-input"
-            placeholder="Add a new task…"
-            aria-label="New task input"
-            maxlength="200"
-            autocomplete="off"
-          />
-        </div>
-        <button class="btn btn-primary" id="add-task-btn" aria-label="Add task">
-          Add Task
-        </button>
+    <!-- iOS search -->
+    <div class="ios-search-wrap">
+      <div class="ios-search">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="searchInp" placeholder="Search" aria-label="Search tasks"/>
       </div>
+    </div>
 
-      <!-- Search -->
-      <div class="search-row">
-        <div class="search-wrapper">
-          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            type="search"
-            id="search-input"
-            class="search-input"
-            placeholder="Search tasks…"
-            aria-label="Search tasks"
-            autocomplete="off"
-          />
-          <button class="clear-search-btn" id="clear-search" aria-label="Clear search" style="display:none">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+    <!-- Filter chips -->
+    <div style="padding:8px 16px 4px;display:flex;gap:8px;overflow-x:auto;">
+      <button class="seg-opt active" data-vf="all"     onclick="setViewFilter('all')">All</button>
+      <button class="seg-opt"        data-vf="active"  onclick="setViewFilter('active')">Active</button>
+      <button class="seg-opt"        data-vf="today"   onclick="setViewFilter('today')">Today</button>
+      <button class="seg-opt"        data-vf="overdue" onclick="setViewFilter('overdue')">Overdue</button>
+      <button class="seg-opt"        data-vf="done"    onclick="setViewFilter('done')">Done</button>
+    </div>
+
+    <!-- Task list -->
+    <div id="task-list-main" style="padding-top:8px;"></div>
+
+  </div><!-- /screen-tasks -->
+
+  <!-- ==================== SCREEN: CALENDAR ==================== -->
+  <div class="screen" id="screen-calendar">
+    <div class="nav-bar">
+      <div class="nav-bar-inner">
+        <div><div class="nav-large-title">Calendar</div></div>
+        <div class="nav-actions">
+          <div class="theme-pill" id="themePill3" role="group" aria-label="Color theme">
+            <div class="theme-opt" data-theme="light">☀️</div>
+            <div class="theme-opt" data-theme="dark">🌙</div>
+          </div>
+          <button class="nav-icon-btn" onclick="calGoToday()" title="Today" aria-label="Go to today">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Filter Tabs -->
-      <div class="filter-row" role="tablist" aria-label="Filter tasks">
-        <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
-        <button class="filter-btn" data-filter="active" role="tab" aria-selected="false">Active</button>
-        <button class="filter-btn" data-filter="completed" role="tab" aria-selected="false">Completed</button>
-        <button class="btn btn-ghost btn-sm" id="clear-completed-btn" aria-label="Clear completed tasks">Clear Done</button>
+    <!-- Month nav -->
+    <div class="cal-nav">
+      <div class="cal-month-title" id="calMonthLabel"></div>
+      <div class="cal-nav-btns">
+        <button class="cal-nav-btn" id="calPrevBtn" aria-label="Previous month">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="cal-nav-btn" id="calNextBtn" aria-label="Next month">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
+    </div>
 
-    </section>
+    <!-- DOW labels -->
+    <div class="cal-dow">
+      <div class="cal-dow-cell">Sun</div><div class="cal-dow-cell">Mon</div>
+      <div class="cal-dow-cell">Tue</div><div class="cal-dow-cell">Wed</div>
+      <div class="cal-dow-cell">Thu</div><div class="cal-dow-cell">Fri</div>
+      <div class="cal-dow-cell">Sat</div>
+    </div>
 
-    <!-- Task List -->
-    <section class="task-list-card" aria-label="Task list">
-      <ul id="task-list" class="task-list" role="list" aria-label="Tasks">
-        <!-- Tasks injected by JS -->
-      </ul>
+    <!-- Calendar grid -->
+    <div class="cal-grid-wrap">
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
 
-      <!-- Empty State -->
-      <div id="empty-state" class="empty-state" aria-live="polite" style="display:none">
-        <!-- Pure CSS/SVG Illustration -->
-        <div class="empty-illustration" aria-hidden="true">
-          <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Clipboard body -->
-            <rect x="20" y="22" width="80" height="82" rx="10" fill="var(--surface-2)" stroke="var(--border)" stroke-width="2"/>
-            <!-- Clip -->
-            <rect x="42" y="14" width="36" height="18" rx="9" fill="var(--surface-2)" stroke="var(--border)" stroke-width="2"/>
-            <rect x="50" y="18" width="20" height="10" rx="5" fill="var(--accent)" opacity="0.3"/>
-            <!-- Lines -->
-            <rect x="34" y="50" width="52" height="4" rx="2" fill="var(--border)"/>
-            <rect x="34" y="62" width="40" height="4" rx="2" fill="var(--border)"/>
-            <rect x="34" y="74" width="46" height="4" rx="2" fill="var(--border)"/>
-            <!-- Checkmark circle -->
-            <circle cx="84" cy="88" r="18" fill="var(--accent)" opacity="0.15"/>
-            <circle cx="84" cy="88" r="14" fill="var(--accent)" opacity="0.2"/>
-            <path d="M77 88l4.5 4.5 7-7" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="empty-title" id="empty-title">No tasks yet</p>
-        <p class="empty-desc" id="empty-desc">Add your first task above to get started.</p>
-      </div>
-    </section>
+    <!-- Selected day -->
+    <div class="cal-day-tasks">
+      <div class="cal-day-header" id="calDayHeader">Tasks for today</div>
+      <div id="calDayList"></div>
+    </div>
 
-    <!-- Edit Modal -->
-    <div id="edit-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none">
-      <div class="modal-card">
-        <h2 id="modal-title" class="modal-title">Edit Task</h2>
-        <input type="text" id="edit-input" class="task-input modal-input" aria-label="Edit task text" maxlength="200" />
-        <div class="modal-actions">
-          <button class="btn btn-ghost" id="cancel-edit">Cancel</button>
-          <button class="btn btn-primary" id="save-edit">Save Changes</button>
+  </div><!-- /screen-calendar -->
+
+  <!-- ==================== SCREEN: STATS ==================== -->
+  <div class="screen" id="screen-stats">
+    <div class="nav-bar">
+      <div class="nav-bar-inner">
+        <div><div class="nav-large-title">Statistics</div></div>
+        <div class="nav-actions">
+          <div class="theme-pill" id="themePill4" role="group" aria-label="Color theme">
+            <div class="theme-opt" data-theme="light">☀️</div>
+            <div class="theme-opt" data-theme="dark">🌙</div>
+          </div>
         </div>
       </div>
     </div>
 
-  </main>
+    <div class="stats-section" style="padding-top:16px;" id="statsContent"></div>
 
-  <!-- Footer -->
-  <footer class="app-footer" role="contentinfo">
-    <p>Built with <span aria-label="love">♥</span> using Vanilla JS &middot; <span id="year"></span> TaskFlow</p>
-    <p class="footer-sub">Tasks are saved locally in your browser.</p>
-  </footer>
+  </div><!-- /screen-stats -->
 
-  <script src="script.js"></script>
+  <!-- ==================== TAB BAR ==================== -->
+  <nav class="tab-bar" role="tablist">
+    <div class="tab-item active" data-tab="today" onclick="tabSwitch('today')" role="tab" tabindex="0" aria-label="Today">
+      <div class="tab-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="tab-badge" id="tab-badge-today" style="display:none">0</span>
+      </div>
+      <span class="tab-label">Today</span>
+    </div>
+    <div class="tab-item" data-tab="tasks" onclick="tabSwitch('tasks')" role="tab" tabindex="0" aria-label="Tasks">
+      <div class="tab-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span class="tab-badge" id="tab-badge-tasks" style="display:none">0</span>
+      </div>
+      <span class="tab-label">Tasks</span>
+    </div>
+    <div class="tab-item" data-tab="calendar" onclick="tabSwitch('calendar')" role="tab" tabindex="0" aria-label="Calendar">
+      <div class="tab-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <span class="tab-label">Calendar</span>
+    </div>
+    <div class="tab-item" data-tab="stats" onclick="tabSwitch('stats')" role="tab" tabindex="0" aria-label="Stats">
+      <div class="tab-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <span class="tab-label">Stats</span>
+    </div>
+  </nav>
+
+  <!-- ==================== FAB ==================== -->
+  <button class="fab" id="fabBtn" aria-label="Add new task">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+</div><!-- /app -->
+
+<!-- ==================== ADD / EDIT SHEET ==================== -->
+<div class="sheet-overlay" id="taskSheet" aria-modal="true" role="dialog">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <button class="sheet-btn danger" id="sheetCancel">Cancel</button>
+      <div class="sheet-title" id="sheetTitle">New Task</div>
+      <button class="sheet-btn" id="sheetSave">Add</button>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group">
+        <div class="form-row-item" style="padding:12px 14px;">
+          <input class="form-row-input" id="fTitle" placeholder="Title" style="text-align:left;font-size:1rem;font-weight:500;" maxlength="120" aria-label="Task title"/>
+        </div>
+        <div class="form-row-item" style="padding:0;">
+          <textarea class="form-row-textarea" id="fDesc" placeholder="Notes" maxlength="500" aria-label="Notes"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Priority</div>
+      <div class="form-group">
+        <div class="form-row-item">
+          <div class="seg-ctrl" id="priCtrl" style="flex:1">
+            <div class="seg-opt" data-pri="low">🔵 Low</div>
+            <div class="seg-opt active" data-pri="med">🟡 Med</div>
+            <div class="seg-opt" data-pri="high">🔴 High</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Category</div>
+      <div class="form-group">
+        <div class="form-row-item">
+          <div class="seg-ctrl" id="catCtrl" style="flex:1">
+            <div class="seg-opt active" data-cat="personal">🏠</div>
+            <div class="seg-opt" data-cat="work">💼</div>
+            <div class="seg-opt" data-cat="study">📚</div>
+            <div class="seg-opt" data-cat="shopping">🛒</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Due Date &amp; Time</div>
+      <div class="form-group">
+        <div class="form-row-item">
+          <span class="form-row-label">Date</span>
+          <input class="form-row-input" type="date" id="fDue" aria-label="Due date"/>
+        </div>
+        <div class="form-row-item">
+          <span class="form-row-label">Time</span>
+          <input class="form-row-input" type="time" id="fTime" aria-label="Due time"/>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== ACTION SHEET (long-press / delete) ==================== -->
+<div class="action-sheet-overlay" id="actionSheet">
+  <div style="width:100%;max-width:430px;">
+    <div class="action-sheet">
+      <div class="action-sheet-title" id="actionSheetTitle">Task Options</div>
+      <button class="action-sheet-btn" id="asEdit">Edit Task</button>
+      <button class="action-sheet-btn destructive" id="asDelete">Delete Task</button>
+    </div>
+    <div class="action-sheet-cancel">
+      <button class="action-sheet-btn bold" id="asCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<!-- ==================== SCRIPT ==================== -->
+<script>
+'use strict';
+
+/* ==========================================================
+   STATE
+   ========================================================== */
+const S = {
+  tasks: [],
+  theme: 'light',
+  tab: 'today',
+  viewFilter: 'all',
+  search: '',
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+  calSelected: todayStr(),
+  editId: null,
+  actionId: null,
+  selPri: 'med',
+  selCat: 'personal',
+};
+
+/* ==========================================================
+   HELPERS
+   ========================================================== */
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function dateStr(y,m,d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
+function isToday(due)    { return due === todayStr(); }
+function isOverdue(due)  { return due && !isToday(due) && due < todayStr(); }
+function isUpcoming(due) { return due && due > todayStr(); }
+function escH(s) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(String(s||'')));
+  return d.innerHTML;
+}
+
+const catMeta = {
+  personal: { emoji:'🏠', label:'Personal', color:'var(--blue)' },
+  work:     { emoji:'💼', label:'Work',     color:'var(--green)' },
+  study:    { emoji:'📚', label:'Study',    color:'var(--orange)' },
+  shopping: { emoji:'🛒', label:'Shopping', color:'var(--pink)' },
+};
+
+function catColor(cat) {
+  const map = {personal:'--blue',work:'--green',study:'--orange',shopping:'--pink'};
+  return `var(${map[cat]||'--blue'})`;
+}
+
+/* ==========================================================
+   PERSISTENCE
+   ========================================================== */
+function save() {
+  try { localStorage.setItem('tf_ios', JSON.stringify({tasks:S.tasks,theme:S.theme})); } catch(e) {}
+}
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem('tf_ios')||'{}');
+    if (s.tasks) S.tasks = s.tasks;
+    if (s.theme) S.theme = s.theme;
+  } catch(e){}
+}
+
+/* ==========================================================
+   THEME
+   ========================================================== */
+function applyTheme(t) {
+  S.theme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.theme-pill .theme-opt').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === t);
+  });
+}
+
+/* ==========================================================
+   TASK CRUD
+   ========================================================== */
+function genId() { return `t${Date.now()}${Math.random().toString(36).slice(2,5)}`; }
+
+function addTask(data) {
+  S.tasks.unshift({ id:genId(), ...data, completed:false, createdAt:Date.now() });
+  save(); updateAll(); toast('Task added', 'success');
+}
+function editTask(id, data) {
+  S.tasks = S.tasks.map(t => t.id===id ? {...t,...data} : t);
+  save(); updateAll(); toast('Task updated', 'info');
+}
+function deleteTask(id) {
+  S.tasks = S.tasks.filter(t => t.id!==id);
+  save(); updateAll(); toast('Task deleted', 'error');
+}
+function toggleTask(id) {
+  S.tasks = S.tasks.map(t => t.id===id ? {...t,completed:!t.completed} : t);
+  save(); updateAll();
+}
+
+/* ==========================================================
+   DERIVED
+   ========================================================== */
+function getFiltered(filter, search) {
+  let t = [...S.tasks];
+  if (filter==='today')   t = t.filter(x => isToday(x.due));
+  if (filter==='overdue') t = t.filter(x => isOverdue(x.due) && !x.completed);
+  if (filter==='done')    t = t.filter(x => x.completed);
+  if (filter==='active')  t = t.filter(x => !x.completed);
+  if (search) { const q=search.toLowerCase(); t=t.filter(x=>x.title.toLowerCase().includes(q)||((x.desc||'').toLowerCase().includes(q))); }
+  return t;
+}
+
+/* ==========================================================
+   RENDER — TASK ROW HTML
+   ========================================================== */
+function dueBadgeHTML(t) {
+  if (!t.due) return '';
+  if (t.completed) return `<span class="meta-chip chip-done">✓ Done</span>`;
+  if (isOverdue(t.due))  return `<span class="meta-chip chip-overdue">⚠ Overdue · ${t.due}</span>`;
+  if (isToday(t.due))    return `<span class="meta-chip chip-today">📅 Today</span>`;
+  if (isUpcoming(t.due)) return `<span class="meta-chip chip-upcoming">📅 ${t.due}</span>`;
+  return '';
+}
+
+function taskRowHTML(t) {
+  const cat = catMeta[t.cat]||catMeta.personal;
+  const priClass = t.pri==='high'?'pri-high':t.pri==='med'?'pri-med':'pri-low';
+  return `
+  <div class="task-row${t.completed?' done':''}" data-id="${t.id}">
+    <div class="ios-cb ${t.completed?'checked':priClass}" data-id="${t.id}" role="checkbox" aria-checked="${t.completed}" tabindex="0" aria-label="Mark complete"></div>
+    <div class="task-content">
+      <div class="task-title-row">${escH(t.title)}</div>
+      <div class="task-meta-row">
+        <span class="meta-chip chip-cat">${cat.emoji} ${cat.label}</span>
+        ${dueBadgeHTML(t)}
+      </div>
+    </div>
+    <div class="task-chevron">
+      <svg width="10" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>`;
+}
+
+function emptyHTML(emoji, title, sub) {
+  return `<div class="empty-state"><div class="empty-icon-wrap">${emoji}</div><div class="empty-title">${title}</div><div class="empty-sub">${sub}</div></div>`;
+}
+
+/* ==========================================================
+   BIND TASK EVENTS
+   ========================================================== */
+function bindTaskEvents(container) {
+  container.querySelectorAll('.ios-cb').forEach(el => {
+    el.addEventListener('click', e => { e.stopPropagation(); toggleTask(el.dataset.id); });
+    el.addEventListener('keydown', e => { if(e.key===' '||e.key==='Enter'){e.preventDefault();toggleTask(el.dataset.id);} });
+  });
+  container.querySelectorAll('.task-row').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.closest('.ios-cb')) return;
+      openActionSheet(el.dataset.id);
+    });
+  });
+}
+
+/* ==========================================================
+   RENDER — TODAY SCREEN
+   ========================================================== */
+function renderToday() {
+  const today = todayStr();
+  const all = S.tasks;
+
+  document.getElementById('sc-today').textContent   = all.filter(t=>isToday(t.due)&&!t.completed).length;
+  document.getElementById('sc-all').textContent     = all.length;
+  document.getElementById('sc-overdue').textContent = all.filter(t=>isOverdue(t.due)&&!t.completed).length;
+  document.getElementById('sc-done').textContent    = all.filter(t=>t.completed).length;
+
+  // Category list rows
+  const listGroup = document.getElementById('lists-group');
+  listGroup.innerHTML = Object.entries(catMeta).map(([k,v])=>{
+    const n = all.filter(t=>t.cat===k&&!t.completed).length;
+    return `<div class="task-row" data-cat="${k}" onclick="tabSwitch('tasks');filterByCat('${k}')">
+      <div style="width:28px;height:28px;border-radius:7px;background:${catColor(k)}20;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">${v.emoji}</div>
+      <div class="task-content"><div class="task-title-row">${v.label}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:.82rem;color:var(--label2);font-weight:500;">${n}</span>
+        <svg width="10" height="16" fill="none" stroke="var(--label3)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Today's tasks
+  const todayTasks = all.filter(t=>isToday(t.due)&&!t.completed);
+  const el = document.getElementById('today-task-list');
+  if (!todayTasks.length) {
+    el.innerHTML = emptyHTML('✅','All clear!','No tasks due today.');
+  } else {
+    el.innerHTML = `<div class="task-group">${todayTasks.map(taskRowHTML).join('')}</div>`;
+    bindTaskEvents(el);
+  }
+
+  // Greeting
+  const hr = new Date().getHours();
+  document.getElementById('greetingTime').textContent = hr<12?'morning':hr<18?'afternoon':'evening';
+  document.querySelector('#greetingTime').parentElement.innerHTML =
+    `Good <span class="accent" id="greetingTime">${hr<12?'morning':hr<18?'afternoon':'evening'}</span> ${hr<12?'☀️':hr<18?'🌤':'🌙'}`;
+}
+
+/* ==========================================================
+   RENDER — TASK LIST SCREEN
+   ========================================================== */
+function renderTaskList() {
+  const tasks = getFiltered(S.viewFilter, S.search);
+  const wrap = document.getElementById('task-list-main');
+
+  const titles = {all:'All Tasks',active:'Active',today:'Due Today',overdue:'Overdue',done:'Completed'};
+  document.getElementById('tasks-screen-title').textContent = titles[S.viewFilter]||'Tasks';
+
+  document.querySelectorAll('[data-vf]').forEach(el=>{
+    el.classList.toggle('active', el.dataset.vf===S.viewFilter);
+  });
+
+  if (!tasks.length) {
+    wrap.innerHTML = emptyHTML('📋','No tasks here','Try a different filter or add a new task.');
+    return;
+  }
+  wrap.innerHTML = `<div class="task-group">${tasks.map(taskRowHTML).join('')}</div>`;
+  bindTaskEvents(wrap);
+}
+
+/* ==========================================================
+   RENDER — CALENDAR
+   ========================================================== */
+function renderCalendar() {
+  const {calYear:y, calMonth:m, calSelected:sel} = S;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthLabel').textContent = `${months[m]} ${y}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const firstDow = new Date(y,m,1).getDay();
+  const daysInM  = new Date(y,m+1,0).getDate();
+  const todaySt  = todayStr();
+
+  // Prev month fill
+  const prevDays = new Date(y,m,0).getDate();
+  for (let i=firstDow-1;i>=0;i--) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = `<div class="cal-num">${prevDays-i}</div>`;
+    grid.appendChild(cell);
+  }
+
+  for (let d=1;d<=daysInM;d++) {
+    const ds  = dateStr(y,m,d);
+    const dayTasks = S.tasks.filter(t=>t.due===ds);
+    const isT = ds===todaySt;
+    const isSel = ds===sel;
+
+    const cell = document.createElement('div');
+    cell.className = `cal-cell${isT?' today':''}${isSel?' selected':''}`;
+    cell.dataset.date = ds;
+
+    const dots = dayTasks.slice(0,4).map(t=>{
+      const c = t.completed?'var(--green)':isOverdue(t.due)?'var(--red)':'var(--blue)';
+      return `<span class="cal-dot" style="background:${c};opacity:.8" title="${escH(t.title)}"></span>`;
+    }).join('');
+
+    cell.innerHTML = `<div class="cal-num">${d}</div><div class="cal-dots">${dots}</div>`;
+    cell.addEventListener('click', ()=>{ S.calSelected=ds; renderCalendar(); renderCalDay(ds); });
+    grid.appendChild(cell);
+  }
+
+  // Next month fill
+  const remaining = 42 - (firstDow + daysInM);
+  for (let i=1;i<=remaining;i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell other-month';
+    cell.innerHTML = `<div class="cal-num">${i}</div>`;
+    grid.appendChild(cell);
+  }
+
+  renderCalDay(sel);
+}
+
+function renderCalDay(ds) {
+  const dayTasks = S.tasks.filter(t=>t.due===ds);
+  const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  let label = '';
+  try { label = new Date(ds+'T12:00:00').toLocaleDateString(undefined,opts); } catch(e){ label=ds; }
+  document.getElementById('calDayHeader').textContent = label;
+
+  const el = document.getElementById('calDayList');
+  if (!dayTasks.length) {
+    el.innerHTML = emptyHTML('📅','No tasks','No tasks scheduled for this day.');
+    return;
+  }
+  el.innerHTML = `<div class="task-group">${dayTasks.map(taskRowHTML).join('')}</div>`;
+  bindTaskEvents(el);
+}
+
+function calGoToday() {
+  S.calYear  = new Date().getFullYear();
+  S.calMonth = new Date().getMonth();
+  S.calSelected = todayStr();
+  renderCalendar();
+}
+
+/* ==========================================================
+   RENDER — STATS
+   ========================================================== */
+function renderStats() {
+  const t  = S.tasks;
+  const total   = t.length;
+  const done    = t.filter(x=>x.completed).length;
+  const pending = t.filter(x=>!x.completed).length;
+  const overdue = t.filter(x=>isOverdue(x.due)&&!x.completed).length;
+  const pct     = total ? Math.round(done/total*100) : 0;
+  const high    = t.filter(x=>x.pri==='high').length;
+  const med     = t.filter(x=>x.pri==='med').length;
+  const low     = t.filter(x=>x.pri==='low').length;
+  const maxP    = Math.max(high,med,low,1);
+
+  const circ = 2*Math.PI*38;
+  const offset = circ*(1-pct/100);
+
+  document.getElementById('statsContent').innerHTML = `
+    <!-- Completion ring -->
+    <div class="ring-wrap" style="margin-bottom:10px;">
+      <svg class="ring-svg" width="96" height="96" viewBox="0 0 96 96">
+        <circle class="ring-bg" cx="48" cy="48" r="38" fill="none" stroke-width="8"/>
+        <circle class="ring-fill" cx="48" cy="48" r="38" fill="none" stroke-width="8"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+      </svg>
+      <div class="ring-text-wrap">
+        <div class="ring-pct">${pct}%</div>
+        <div class="ring-label">Overall completion</div>
+      </div>
+    </div>
+
+    <!-- 4 stat blocks -->
+    <div class="stats-row">
+      <div class="stat-block">
+        <div class="stat-block-num" style="color:var(--purple)">${total}</div>
+        <div class="stat-block-label">Total Tasks</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-num" style="color:var(--green)">${done}</div>
+        <div class="stat-block-label">Completed</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-num" style="color:var(--orange)">${pending}</div>
+        <div class="stat-block-label">Pending</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-num" style="color:var(--red)">${overdue}</div>
+        <div class="stat-block-label">Overdue</div>
+      </div>
+    </div>
+
+    <!-- Priority bars -->
+    <div class="stat-bar-card">
+      <div class="stat-bar-title">Priority Breakdown</div>
+      <div class="stat-bar-row">
+        <div class="stat-bar-lbl" style="color:var(--red)">High</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${high/maxP*100}%;background:var(--red)"></div></div>
+        <div class="stat-bar-n">${high}</div>
+      </div>
+      <div class="stat-bar-row">
+        <div class="stat-bar-lbl" style="color:var(--orange)">Med</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${med/maxP*100}%;background:var(--orange)"></div></div>
+        <div class="stat-bar-n">${med}</div>
+      </div>
+      <div class="stat-bar-row">
+        <div class="stat-bar-lbl" style="color:var(--blue)">Low</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${low/maxP*100}%;background:var(--blue)"></div></div>
+        <div class="stat-bar-n">${low}</div>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="stat-bar-card">
+      <div class="stat-bar-title">By Category</div>
+      ${Object.entries(catMeta).map(([k,v])=>{
+        const n = t.filter(x=>x.cat===k).length;
+        return `<div class="stat-bar-row">
+          <div class="stat-bar-lbl" style="width:60px;font-size:.7rem;">${v.emoji} ${v.label}</div>
+          <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${total?n/total*100:0}%;background:${catColor(k)}"></div></div>
+          <div class="stat-bar-n">${n}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* ==========================================================
+   UPDATE ALL
+   ========================================================== */
+function updateAll() {
+  const pending = S.tasks.filter(t=>!t.completed).length;
+  const badge = document.getElementById('tab-badge-today');
+  const cnt = S.tasks.filter(t=>isToday(t.due)&&!t.completed).length;
+  badge.textContent = cnt;
+  badge.style.display = cnt ? 'flex' : 'none';
+
+  const b2 = document.getElementById('tab-badge-tasks');
+  b2.textContent = pending;
+  b2.style.display = pending ? 'flex' : 'none';
+
+  if (S.tab==='today')    renderToday();
+  if (S.tab==='tasks')    renderTaskList();
+  if (S.tab==='calendar') renderCalendar();
+  if (S.tab==='stats')    renderStats();
+}
+
+/* ==========================================================
+   TAB SWITCH
+   ========================================================== */
+function tabSwitch(tab) {
+  S.tab = tab;
+  document.querySelectorAll('.screen').forEach(el=>{
+    el.classList.toggle('active', el.id===`screen-${tab}`);
+  });
+  document.querySelectorAll('.tab-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  if (tab==='today')    renderToday();
+  if (tab==='tasks')    renderTaskList();
+  if (tab==='calendar') renderCalendar();
+  if (tab==='stats')    renderStats();
+}
+
+/* ==========================================================
+   VIEW FILTER
+   ========================================================== */
+function setViewFilter(f) {
+  S.viewFilter = f;
+  renderTaskList();
+}
+
+function filterByCat(cat) {
+  S.viewFilter = 'all';
+  S.search = cat;
+  // simple: filter by cat name
+  const tasks = S.tasks.filter(t=>t.cat===cat&&!t.completed);
+  const wrap = document.getElementById('task-list-main');
+  const title = catMeta[cat]?.label||'Tasks';
+  document.getElementById('tasks-screen-title').textContent = `${catMeta[cat]?.emoji||''} ${title}`;
+  if (!tasks.length) { wrap.innerHTML = emptyHTML('📋','Empty list','No tasks in this category.'); return; }
+  wrap.innerHTML = `<div class="task-group">${tasks.map(taskRowHTML).join('')}</div>`;
+  bindTaskEvents(wrap);
+  S.search = '';
+}
+
+/* ==========================================================
+   ADD / EDIT SHEET
+   ========================================================== */
+function openAddSheet() {
+  S.editId = null;
+  document.getElementById('sheetTitle').textContent = 'New Task';
+  document.getElementById('sheetSave').textContent  = 'Add';
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fDesc').value  = '';
+  document.getElementById('fDue').value   = todayStr();
+  document.getElementById('fTime').value  = '';
+  setSheetPri('med');
+  setSheetCat('personal');
+  document.getElementById('taskSheet').classList.add('open');
+  setTimeout(()=>document.getElementById('fTitle').focus(),80);
+}
+
+function openEditSheet(id) {
+  const t = S.tasks.find(x=>x.id===id);
+  if (!t) return;
+  S.editId = id;
+  document.getElementById('sheetTitle').textContent = 'Edit Task';
+  document.getElementById('sheetSave').textContent  = 'Save';
+  document.getElementById('fTitle').value = t.title;
+  document.getElementById('fDesc').value  = t.desc||'';
+  document.getElementById('fDue').value   = t.due||'';
+  document.getElementById('fTime').value  = t.time||'';
+  setSheetPri(t.pri||'med');
+  setSheetCat(t.cat||'personal');
+  document.getElementById('taskSheet').classList.add('open');
+}
+
+function closeSheet() {
+  document.getElementById('taskSheet').classList.remove('open');
+}
+
+function saveSheet() {
+  const title = document.getElementById('fTitle').value.trim();
+  if (!title) { toast('Please enter a title','warning'); return; }
+  const data = {
+    title,
+    desc:  document.getElementById('fDesc').value.trim(),
+    pri:   S.selPri,
+    cat:   S.selCat,
+    due:   document.getElementById('fDue').value,
+    time:  document.getElementById('fTime').value,
+  };
+  if (S.editId) editTask(S.editId, data);
+  else          addTask(data);
+  closeSheet();
+}
+
+function setSheetPri(p) {
+  S.selPri = p;
+  document.querySelectorAll('#priCtrl .seg-opt').forEach(el=>{
+    el.classList.toggle('active', el.dataset.pri===p);
+  });
+}
+function setSheetCat(c) {
+  S.selCat = c;
+  document.querySelectorAll('#catCtrl .seg-opt').forEach(el=>{
+    el.classList.toggle('active', el.dataset.cat===c);
+  });
+}
+
+/* ==========================================================
+   ACTION SHEET
+   ========================================================== */
+function openActionSheet(id) {
+  S.actionId = id;
+  const t = S.tasks.find(x=>x.id===id);
+  document.getElementById('actionSheetTitle').textContent = t ? t.title : 'Task';
+  document.getElementById('actionSheet').classList.add('open');
+}
+function closeActionSheet() {
+  document.getElementById('actionSheet').classList.remove('open');
+}
+
+/* ==========================================================
+   TOAST
+   ========================================================== */
+function toast(msg, type='success') {
+  const colors = {success:'var(--green)',error:'var(--red)',info:'var(--blue)',warning:'var(--orange)'};
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-dot" style="background:${colors[type]||colors.info}"></span><span>${escH(msg)}</span>`;
+  document.getElementById('toastWrap').appendChild(el);
+  setTimeout(()=>{
+    el.classList.add('out');
+    el.addEventListener('animationend',()=>el.remove(),{once:true});
+  }, 2600);
+}
+
+/* ==========================================================
+   BIND EVENTS
+   ========================================================== */
+function bind() {
+  // Theme pills (all 4 instances)
+  document.querySelectorAll('.theme-pill .theme-opt').forEach(el=>{
+    el.addEventListener('click',()=>{ applyTheme(el.dataset.theme); save(); toast(`${el.dataset.theme==='dark'?'Dark':'Light'} mode`,'info'); });
+  });
+
+  // FAB
+  document.getElementById('fabBtn').addEventListener('click', openAddSheet);
+
+  // Sheet
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', saveSheet);
+  document.getElementById('fTitle').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();saveSheet();} });
+
+  // Sheet overlay close
+  document.getElementById('taskSheet').addEventListener('click',e=>{ if(e.target===document.getElementById('taskSheet')) closeSheet(); });
+
+  // Priority segmented
+  document.querySelectorAll('#priCtrl .seg-opt').forEach(el=>{
+    el.addEventListener('click',()=>setSheetPri(el.dataset.pri));
+  });
+  // Category segmented
+  document.querySelectorAll('#catCtrl .seg-opt').forEach(el=>{
+    el.addEventListener('click',()=>setSheetCat(el.dataset.cat));
+  });
+
+  // Action sheet
+  document.getElementById('asEdit').addEventListener('click',()=>{ closeActionSheet(); openEditSheet(S.actionId); });
+  document.getElementById('asDelete').addEventListener('click',()=>{ closeActionSheet(); deleteTask(S.actionId); });
+  document.getElementById('asCancel').addEventListener('click', closeActionSheet);
+  document.getElementById('actionSheet').addEventListener('click',e=>{ if(e.target===document.getElementById('actionSheet')) closeActionSheet(); });
+
+  // Calendar nav
+  document.getElementById('calPrevBtn').addEventListener('click',()=>{
+    S.calMonth--; if(S.calMonth<0){S.calMonth=11;S.calYear--;} renderCalendar();
+  });
+  document.getElementById('calNextBtn').addEventListener('click',()=>{
+    S.calMonth++; if(S.calMonth>11){S.calMonth=0;S.calYear++;} renderCalendar();
+  });
+
+  // Search
+  document.getElementById('searchInp').addEventListener('input',e=>{ S.search=e.target.value; renderTaskList(); });
+
+  // Escape key
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ closeSheet(); closeActionSheet(); }
+  });
+
+  // Tab keyboard
+  document.querySelectorAll('.tab-item').forEach(el=>{
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') tabSwitch(el.dataset.tab); });
+  });
+}
+
+/* ==========================================================
+   INIT
+   ========================================================== */
+function init() {
+  load();
+  applyTheme(S.theme);
+  bind();
+  renderToday();
+  renderCalendar();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
